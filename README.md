@@ -5,16 +5,19 @@ An interactive map application showcasing 45 Dunkin' Donuts locations scouted fo
 ## Features
 
 ✨ **Interactive Map**
+
 - OpenStreetMap-based interactive map with zoom and pan
 - Marker clustering for area overview
 - Color-coded markers by WiFi speed
 
 🔍 **Search & Filter**
+
 - Search locations by name, address, or notes
 - Filter by minimum WiFi speed (0-100 Mbps)
 - Real-time statistics
 
 📊 **Location Details**
+
 - WiFi speed ratings displayed in parentheses (e.g., "Dunks 65 JFK (39)" = 39 Mbps)
 - Address information
 - Notes about seating, amenities, and atmosphere
@@ -22,6 +25,7 @@ An interactive map application showcasing 45 Dunkin' Donuts locations scouted fo
 - Side-by-side sidebar with all locations
 
 🎨 **Visual Design**
+
 - Responsive design (desktop and mobile optimized)
 - Dunkin' Donuts brand color scheme (orange/brown)
 - Smooth animations and transitions
@@ -30,26 +34,30 @@ An interactive map application showcasing 45 Dunkin' Donuts locations scouted fo
 ## WiFi Speed Classification
 
 - 🟢 **Excellent**: 60+ Mbps
-- 🟡 **Good**: 30-59 Mbps  
+- 🟡 **Good**: 30-59 Mbps
 - 🔴 **Poor**: 0-29 Mbps
 - ⚫ **No Data**: WiFi speed not recorded
 
 ## Quick Start
 
 ### Option 1: Using Python (Recommended)
+
 ```bash
 cd /path/to/claude-code-dunks-locator
 python3 server.py
 ```
+
 Then open **http://localhost:8000** in your browser
 
 ### Option 2: Using Node.js
+
 ```bash
 cd /path/to/claude-code-dunks-locator
 npx http-server -p 8000 -o
 ```
 
 ### Option 3: Open directly
+
 Simply open `index.html` in your browser (limited functionality)
 
 ## Files
@@ -77,7 +85,8 @@ This app displays data from scouted Dunkin' Donuts locations across the Massachu
 
 **Search**: Find locations by name, address, or notes
 **WiFi Filter**: Use the slider to show only locations meeting your speed requirements
-**Map Interactions**: 
+**Map Interactions**:
+
 - Click markers to see details
 - Click locations in sidebar to jump to that spot
 - Use mouse to zoom/pan
