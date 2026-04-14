@@ -121,6 +121,25 @@
             overflow-y: auto;
         }
 
+        .photo-resize-handle {
+            display: none;
+            height: 6px;
+            background: #dee2e6;
+            cursor: row-resize;
+            flex-shrink: 0;
+            transition: background 0.2s;
+            user-select: none;
+        }
+
+        .photo-resize-handle:hover,
+        .photo-resize-handle.dragging {
+            background: #ff6b35;
+        }
+
+        .selected-photos.active ~ .photo-resize-handle {
+            display: block;
+        }
+
         .selected-photos.active {
             display: block;
         }
@@ -338,6 +357,7 @@
             </div>
 
             <div id="selectedPhotos" class="selected-photos"></div>
+            <div id="photoResizeHandle" class="photo-resize-handle"></div>
 
             <div class="locations-list" id="locationsList">
                 <div class="no-results">Loading locations...</div>
@@ -483,6 +503,33 @@
 
             renderSelectedPhotos();
         }
+
+        // Resize handle for photo panel
+        let isResizing = false;
+        let startY = 0;
+        let startHeight = 200;
+
+        const resizeHandle = document.getElementById('photoResizeHandle');
+        const photoPanel = document.getElementById('selectedPhotos');
+
+        resizeHandle.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            startY = e.clientY;
+            startHeight = photoPanel.offsetHeight;
+            resizeHandle.classList.add('dragging');
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            const delta = e.clientY - startY;
+            const newHeight = Math.max(100, Math.min(400, startHeight + delta));
+            photoPanel.style.maxHeight = newHeight + 'px';
+        });
+
+        document.addEventListener('mouseup', () => {
+            isResizing = false;
+            resizeHandle.classList.remove('dragging');
+        });
 
         // Select location
         function selectLocation(idx) {
