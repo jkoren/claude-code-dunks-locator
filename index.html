@@ -327,6 +327,93 @@
             width: 30px !important;
             height: 30px !important;
         }
+
+        .photo-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .photo-modal.active {
+            display: flex;
+        }
+
+        .photo-modal-content {
+            position: relative;
+            max-width: 90vw;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .photo-modal-image {
+            max-width: 100%;
+            max-height: calc(90vh - 50px);
+            object-fit: contain;
+        }
+
+        .photo-modal-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .photo-modal-close:hover {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .photo-modal-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .photo-modal-nav:hover {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .photo-modal-prev {
+            left: 10px;
+        }
+
+        .photo-modal-next {
+            right: 10px;
+        }
+
+        .photo-clickable {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -366,6 +453,18 @@
 
         <div class="map-wrapper">
             <div id="map"></div>
+        </div>
+    </div>
+
+    <div id="photoModal" class="photo-modal">
+        <div class="photo-modal-content">
+            <button class="photo-modal-close" onclick="closePhotoModal()">&times;</button>
+            <button class="photo-modal-nav photo-modal-prev" onclick="prevPhoto()">&#10094;</button>
+            <img id="photoModalImage" class="photo-modal-image" src="" alt="Photo" />
+            <button class="photo-modal-nav photo-modal-next" onclick="nextPhoto()">&#10095;</button>
+            <div style="text-align: center; color: white; margin-top: 10px; font-size: 14px;">
+                <span id="photoCounter"></span>
+            </div>
         </div>
     </div>
 
@@ -562,10 +661,10 @@
                 <div class="popup-gallery">
                     <div class="popup-gallery-title">Photos</div>
                     <div class="popup-gallery-row">
-                        ${galleryImages.map(src => `
-                            <a href="${normalizePhotoPath(src)}" target="_blank" class="popup-gallery-item">
+                        ${galleryImages.map((src, idx) => `
+                            <div class="popup-gallery-item photo-clickable" data-photo-index="${idx}" onclick="openPhotoModalFromGallery(this)">
                                 <img src="${normalizePhotoPath(src)}" alt="Location photo">
-                            </a>
+                            </div>
                         `).join('')}
                     </div>
                 </div>
@@ -581,10 +680,10 @@
             }
 
             const imageCount = selectedLocation.images.length;
-            const photosHtml = selectedLocation.images.map(src => `
-                <a href="${normalizePhotoPath(src)}" target="_blank" class="selected-photo-item">
+            const photosHtml = selectedLocation.images.map((src, idx) => `
+                <div class="selected-photo-item photo-clickable" data-photo-index="${idx}" onclick="openPhotoModalFromSidebar(this)">
                     <img src="${normalizePhotoPath(src)}" alt="${escapeHtml(selectedLocation.title)} photo" />
-                </a>
+                </div>
             `).join('');
 
             container.classList.add('active');
@@ -595,6 +694,63 @@
                 </div>
             `;
         }
+
+        // Modal photo viewer
+        let currentPhotoArray = [];
+        let currentPhotoIndex = 0;
+        let currentLocationPhotos = [];
+
+        function openPhotoModalFromGallery(element) {
+            const gallery = element.closest('.popup-gallery');
+            const items = gallery.querySelectorAll('.popup-gallery-item');
+            currentPhotoArray = Array.from(items).map(item => 
+                normalizePhotoPath(item.querySelector('img').src)
+            );
+            currentPhotoIndex = parseInt(element.dataset.photoIndex);
+            updatePhotoModal();
+            document.getElementById('photoModal').classList.add('active');
+        }
+
+        function openPhotoModalFromSidebar(element) {
+            if (!selectedLocation || !selectedLocation.images) return;
+            currentPhotoArray = selectedLocation.images.map(normalizePhotoPath);
+            currentPhotoIndex = parseInt(element.dataset.photoIndex);
+            updatePhotoModal();
+            document.getElementById('photoModal').classList.add('active');
+        }
+
+        function closePhotoModal() {
+            document.getElementById('photoModal').classList.remove('active');
+        }
+
+        function updatePhotoModal() {
+            const photo = currentPhotoArray[currentPhotoIndex];
+            document.getElementById('photoModalImage').src = photo;
+            const counter = `${currentPhotoIndex + 1} / ${currentPhotoArray.length}`;
+            document.getElementById('photoCounter').textContent = counter;
+        }
+
+        function nextPhoto() {
+            currentPhotoIndex = (currentPhotoIndex + 1) % currentPhotoArray.length;
+            updatePhotoModal();
+        }
+
+        function prevPhoto() {
+            currentPhotoIndex = (currentPhotoIndex - 1 + currentPhotoArray.length) % currentPhotoArray.length;
+            updatePhotoModal();
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closePhotoModal();
+            if (e.key === 'ArrowRight') nextPhoto();
+            if (e.key === 'ArrowLeft') prevPhoto();
+        });
+
+        // Close modal on background click
+        document.getElementById('photoModal').addEventListener('click', (e) => {
+            if (e.target.id === 'photoModal') closePhotoModal();
+        });
 
         // Filter locations
         function filterLocations() {
