@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Map</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        .info { position: fixed; top: 10px; left: 10px; background: white; padding: 10px; border-radius: 5px; z-index: 1000; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div class="info">
+        <div>Status: <span id="status">Loading...</span></div>
+        <div>Markers: <span id="markerCount">0</span></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script>
+        console.log('Script starting...');
+        
+        // Create map
+        const map = L.map('map').setView([42.4, -71.2], 10);
+        console.log('Map created:', map);
+        
+        // Add tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap',
+            maxZoom: 19
+        }).addTo(map);
+        console.log('Tiles added');
+        
+        document.getElementById('status').textContent = 'Map ready, loading data...';
+        
+        // Load locations
+        fetch('locations.json')
+            .then(response => {
+                console.log('Fetch response:', response.status);
+                return response.json();
+            })
+            .then(locations => {
+                console.log('Loaded locations:', locations.length);
+                console.log('First location:', locations[0]);
+                
+                let count = 0;
+                locations.forEach((location, idx) => {
+                    try {
+                        const marker = L.marker([location.latitude, location.longitude])
+                            .bindPopup(`<b>${location.title}</b><br/>WiFi: ${location.wifi_speed || 'N/A'} Mbps`)
+                            .addTo(map);
+                        count++;
+                    } catch (e) {
+                        console.error('Error adding marker for', location.title, e);
+                    }
+                });
+                
+                console.log('Added', count, 'markers');
+                document.getElementById('status').textContent = 'Complete!';
+                document.getElementById('markerCount').textContent = count;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('status').textContent = 'Error: ' + error.message;
+            });
+    </script>
+</body>
+</html>
