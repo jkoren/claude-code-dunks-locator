@@ -314,9 +314,9 @@
         .sidebar::-webkit-scrollbar-thumb:hover { background: #e55a23; }
 
         .custom-marker-icon {
-            width: 12px !important;
-            max-width: 12px !important;
-            max-height: 12px !important;
+            width: 30px !important;
+            max-width: 30px !important;
+            max-height: 30px !important;
             height: auto !important;
             display: block;
         }
@@ -324,8 +324,8 @@
         .custom-marker {
             background: transparent;
             border: none;
-            width: 12px !important;
-            height: 12px !important;
+            width: 30px !important;
+            height: 30px !important;
         }
     </style>
 </head>
@@ -438,16 +438,16 @@
                 const wifiText = location.wifi_speed ? `${location.wifi_speed} Mbps` : 'N/A';
 
                 const iconHtml = `
-                    <div style="width: 12px; height: 12px; display: inline-block;">
+                    <div style="width: 30px; height: 30px; display: inline-block;">
                         <img class="custom-marker-icon" src="${defaultIconImage}" alt="Dunkin marker" style="width: 100%; height: auto; display: block;" />
                     </div>
                 `;
                 const icon = L.divIcon({
                     html: iconHtml,
                     className: 'custom-marker',
-                    iconSize: [15, 15],
-                    iconAnchor: [8, 8],
-                    popupAnchor: [0, -9]
+                    iconSize: [30, 30],
+                    iconAnchor: [15, 15],
+                    popupAnchor: [0, -15]
                 });
 
                 const marker = L.marker([location.latitude, location.longitude], { icon });
