@@ -357,7 +357,7 @@
                 const popupHtml = `
                     <div>
                         <div class="popup-title">${escapeHtml(location.title)}</div>
-                        <div class="popup-wifi ${location.wifi_speed ? '' : 'no-data'}">📶 ${wifiText}</div>
+                        ${location.wifi_speed ? `<div class="popup-wifi">📶 ${wifiText}</div>` : ''}
                         ${location.notes ? `<div class="popup-notes">${escapeHtml(location.notes)}</div>` : ''}
                     </div>
                 `;
@@ -389,13 +389,14 @@
                 const isActive = selectedLocation && 
                     selectedLocation.latitude === loc.latitude && 
                     selectedLocation.longitude === loc.longitude;
-                const wifiText = loc.wifi_speed ? `${loc.wifi_speed} Mbps` : 'No data';
+
+                const wifiBadge = loc.wifi_speed ? `<span class="location-wifi">📶 ${loc.wifi_speed} Mbps</span>` : '';
 
                 return `
                     <div class="location-item ${isActive ? 'active' : ''}" 
                          onclick="selectLocation(${idx})">
                         <div class="location-title">${escapeHtml(loc.title)}</div>
-                        <span class="location-wifi ${loc.wifi_speed ? '' : 'no-data'}">📶 ${wifiText}</span>
+                        ${wifiBadge}
                     </div>
                 `;
             }).join('');
